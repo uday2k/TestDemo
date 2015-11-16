@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'cucumber'
+apply plugin: 'scala'
+
+buildscript {
+    repositories {
+        if (project.hasProperty('mavenRepo')) {
+            maven {
+                url project.mavenRepo
+            }
+        } else {
+            mavenLocal()
+        }
+    }
+    // add dependency to get the cucumber plugin
+    dependencies {
+        classpath 'cucumber.contrib.gradle:cucumber-gradle:0.1.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // define your version of Cucumber to use
+    testCompile 'info.cukes:cucumber-java:1.1.5'
+    testCompile 'info.cukes:cucumber-scala_2.10:1.1.5'
+    // it is recommended to use this Gherkin version or later to get proper output flushing
+    testCompile 'info.cukes:gherkin:2.12.2'
+    testCompile 'junit:junit:4.11'
+
+    testCompile 'org.scala-lang:scala-library:2.10.3'
+}
+
+// a 'cucumber' task is added by the cucumber plugin
+// it runs features in 'src/test/resources' and searches for glue code in any test package
+// it generates reports in json, html and junit xml format in $project.buildDir
+cucumber {
+    // you can configure extra JVM args
+    jvmArgs '-Xmx512m'
+    // or add any other JavaExec properties here, but don't change 'args'!
+    systemProperty 'customSystemProperty', 'avalue'
+
+    htmlReport false
+
+    // assertions are already enabled
+    // enableAssertions true
+
+    // set property cukeDebug=true to debug
+    features += file('features')
+
+    glue += 'example'
+}

@@ -1,0 +1,49 @@
+import org.gradle.logging.ShowStacktrace
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+ext.testRepoURL = uri("$buildDir/repo")
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+task testPlugin(type: GradleBuild) {
+    buildFile file('src/test/example-project/build.gradle')
+    dir file('src/test/example-project')
+    startParameter.projectProperties['mavenRepo'] = testRepoURL
+    startParameter.projectProperties['cukeTags'] = '~@wip'
+    startParameter.showStacktrace = ShowStacktrace.ALWAYS_FULL
+    tasks += 'cucumber'
+}
+
+task installTestPlugin(type: Upload) {
+    repositories {
+        maven {
+            url testRepoURL
+        }
+    }
+    configuration = configurations.archives
+}
+
+uploadArchives {
+    uploadDescriptor = true
+    repositories {
+        mavenDeployer {
+            repository(url: mavenDeployUrl) {
+                authentication(userName: mavenDeployUsername, password: mavenDeployPassword)
+            }
+        }
+    }
+}
+
+testPlugin.dependsOn installTestPlugin
+test.dependsOn testPlugin
