@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<bean id="barString" class="java.lang.String">
+		<constructor-arg value="bar"/>
+	</bean>
+
+	<int:transformer input-channel="input" output-channel="output" expression="@foo + @barString"/>
+
+	<int:transformer input-channel="fromParentToChild" output-channel="output" expression="payload.toUpperCase()" />
+
+	<int:channel id="output">
+		<int:queue/>
+	</int:channel>
+
+	<bean class="org.springframework.integration.expression.ParentContextTests$Foo" />
+
+	<int:spel-function id="bar" class="org.springframework.integration.expression.ParentContextTests$Bar" method="bar"/>
+
+	<int:spel-function id="barChild" class="org.springframework.integration.expression.ParentContextTests$Bar" method="bar"/>
+
+	<int:spel-function id="jsonPath" class="org.springframework.integration.expression.ParentContextTests$Bar" method="bar"/>
+
+	<int:spel-property-accessors>
+		<ref bean="jsonPropertyAccessor"/>
+	</int:spel-property-accessors>
+
+	<bean id="jsonPropertyAccessor" class="org.springframework.integration.json.JsonPropertyAccessor"/>
+
+	<bean id="messageBuilderFactory" class="org.springframework.integration.support.MutableMessageBuilderFactory" />
+
+</beans>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<converter>
+		<beans:bean class="org.springframework.integration.channel.config.ChannelParserTests$TestConverter" />
+	</converter>
+
+	<channel id="capacityChannel">
+		<queue capacity="10" />
+	</channel>
+
+	<channel id="defaultChannel" />
+
+	<channel id="channelWithFailover">
+		<dispatcher failover="true" load-balancer="none"/>
+	</channel>
+
+	<channel id="channelWithCustomQueue">
+		<queue ref="customQueue"/>
+	</channel>
+
+	<beans:bean id="customQueue" class="java.util.concurrent.LinkedBlockingQueue"/>
+
+	<publish-subscribe-channel id="publishSubscribeChannel" />
+
+	<publish-subscribe-channel id="publishSubscribeChannelWithTaskExecutorRef"
+		task-executor="taskExecutor" />
+
+	<channel id="integerChannel" datatype="java.lang.Integer" message-converter="uselessConverter">
+		<queue capacity="10" />
+	</channel>
+
+	<beans:bean id="uselessConverter" class="org.springframework.integration.channel.config.ChannelParserTests$UselessMessageConverter" />
+
+	<channel id="numberChannel" datatype="java.lang.Number">
+		<queue capacity="10" />
+	</channel>
+
+	<channel id="stringOrNumberChannel" datatype="java.lang.String,java.lang.Number"
+			 message-converter="uselessConverter">
+		<queue capacity="10" />
+	</channel>
+
+	<beans:bean id="taskExecutor"
+		class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+
+</beans:beans>

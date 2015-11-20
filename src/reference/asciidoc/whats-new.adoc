@@ -1,0 +1,28 @@
+[[whats-new]]
+== What's new in Spring Integration 4.3?
+
+This chapter provides an overview of the new features and improvements that have been introduced with Spring
+Integration 4.3.
+If you are interested in more details, please see the Issue Tracker tickets that were resolved as part of the 4.3
+development process.
+
+[[x4.3-new-components]]
+=== New Components
+
+
+[[x4.3-general]]
+=== General Changes
+
+==== Outbound Gateway within Chain
+
+Previously, it was possible to specify a `reply-channel` on an outbound gateway within a chain.
+It was completely ignored; the gateway's reply goes to the next chain element, or to the chain's output channel
+if the gateway is the last element.
+This condition is now detected and disallowed.
+If you have such configuration, simply remove the `reply-channel`.
+
+==== Mail Changes
+
+The customizable `userFlag` added in 4.2.2 to provide customization of the flag used to denote that the mail has been
+seen is now available using the XML namespace.
+See <<imap-seen>> for more information.

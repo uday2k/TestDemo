@@ -1,0 +1,2 @@
+http\://www.springframework.org/schema/integration/ftp/spring-integration-ftp-4.3.xsd=org/springframework/integration/ftp/config/spring-integration-ftp-4.3.xsd
+http\://www.springframework.org/schema/integration/ftp/spring-integration-ftp.xsd=org/springframework/integration/ftp/config/spring-integration-ftp-4.3.xsd

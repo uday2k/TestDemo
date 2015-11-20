@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder properties-ref="props"/>
+
+	<util:properties id="props">
+		<beans:prop key="majority">MAJORITY</beans:prop>
+	</util:properties>
+
+	<selector-chain id="selectorChain">
+		<selector ref="selector1"/>
+		<selector ref="selector2"/>
+	</selector-chain>
+
+	<selector-chain id="nestedSelectorChain" voting-strategy="${majority}">
+		<selector ref="selector1"/>
+		<selector-chain voting-strategy="ALL">
+			<selector ref="selector2"/>
+			<selector-chain voting-strategy="ANY">
+				<selector ref="selector3"/>
+				<selector ref="selector4"/>
+			</selector-chain>
+			<selector ref="selector5"/>
+		</selector-chain>
+		<selector-chain voting-strategy="MAJORITY_OR_TIE">
+			<selector ref="selector6"/>
+		</selector-chain>
+	</selector-chain>
+	
+	<!-- TODO INT-547 
+	<selector id="pojoSelector" ref="pojoSelectorBean" method="accept"/>
+	 -->
+	
+	<beans:bean id="pojoSelectorBean" class="org.springframework.integration.config.SelectorChainParserTests$StubPojoSelector"/>
+
+	<beans:bean id="selector1" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+	<beans:bean id="selector2" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+	<beans:bean id="selector3" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+	<beans:bean id="selector4" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+	<beans:bean id="selector5" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+	<beans:bean id="selector6" class="org.springframework.integration.config.SelectorChainParserTests$StubMessageSelector"/>
+
+</beans:beans>

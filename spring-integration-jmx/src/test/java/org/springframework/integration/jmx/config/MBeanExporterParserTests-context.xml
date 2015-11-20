@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:si="http://www.springframework.org/schema/integration"
+	xmlns:jmx="http://www.springframework.org/schema/integration/jmx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/jmx http://www.springframework.org/schema/integration/jmx/spring-integration-jmx.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:mbean-server id="mbs"/>
+
+	<si:channel id="testChannel"/>
+
+	<jmx:mbean-export id="integratioMbeanExporter" 
+					  server="mbs" 
+					  default-domain="tests.MBeanExpoerterParser"
+					  object-name-static-properties="appProperties"
+					  object-naming-strategy="keyNamer"
+					  managed-components="\!excluded, f*, b*, q*, t*" />
+
+	<si:management
+		default-logging-enabled="false"
+		default-counts-enabled="false"
+		default-stats-enabled="false"
+		counts-enabled-patterns="foo, !baz, ba*"
+		stats-enabled-patterns="fiz, buz"
+		metrics-factory="mf" />
+						  
+	<util:properties id="appProperties">
+		<prop key="foo">foo</prop>
+		<prop key="bar">bar</prop>
+	</util:properties>
+
+	<bean id="keyNamer" class="org.springframework.jmx.export.naming.KeyNamingStrategy" />
+
+	<si:channel id="foo" />
+
+	<si:channel id="bar" />
+
+	<si:channel id="baz" />
+
+	<si:channel id="qux" />
+
+	<si:channel id="fiz" />
+
+	<si:channel id="buz" />
+
+	<si:channel id="!excluded" />
+
+	<si:transformer id="transformer" input-channel="foo" expression="payload" />
+
+	<bean id="mf" class="org.springframework.integration.jmx.config.MBeanExporterParserTests$CustomMetrics" />
+
+</beans>

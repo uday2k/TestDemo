@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<bean id="foo" class="java.lang.String">
+		<constructor-arg value="foo"/>
+	</bean>
+
+	<int:transformer input-channel="parentIn" output-channel="parentOut" expression="@foo"/>
+
+	<int:channel id="parentOut">
+		<int:queue/>
+	</int:channel>
+
+	<int:channel id="fromParentToChild" />
+
+	<bean class="org.springframework.integration.expression.ParentContextTests$Foo" />
+
+	<bean class="org.springframework.integration.expression.ParentContextTests$Foo" />
+
+	<bean id="integrationEvaluationContext"
+		  class="org.springframework.integration.config.IntegrationEvaluationContextFactoryBean">
+		<property name="functions">
+			<map>
+				<entry key="fooFunc"
+					   value="#{T(org.springframework.integration.expression.ParentContextTests$Bar).getMethod('bar', T(Object))}"/>
+			</map>
+		</property>
+	</bean>
+
+	<int:spel-function id="bar" class="org.springframework.integration.expression.ParentContextTests$Bar" method="bar"/>
+
+	<int:spel-function id="barParent" class="org.springframework.integration.expression.ParentContextTests$Bar" method="bar"/>
+
+	<int:spel-property-accessors>
+		<ref bean="parentJsonPropertyAccessor"/>
+		<ref bean="jsonPropertyAccessor"/>
+	</int:spel-property-accessors>
+
+	<bean id="jsonPropertyAccessor" class="org.springframework.integration.json.JsonPropertyAccessor"/>
+
+	<bean id="parentJsonPropertyAccessor" class="org.springframework.integration.json.JsonPropertyAccessor"/>
+
+	<bean id="barService" class="org.springframework.integration.expression.ParentContextTests$Bar" />
+
+	<int:chain input-channel="testJsonNodeToStringConverterInputChannel"
+			output-channel="testJsonNodeToStringConverterOutputChannel">
+		<int:object-to-json-transformer result-type="NODE"/>
+		<int:transformer expression="payload.firstName"/>
+		<int:service-activator ref="barService" method="testJsonNodeToStringConverter"/>
+	</int:chain>
+
+	<int:channel id="testJsonNodeToStringConverterOutputChannel">
+		<int:queue/>
+	</int:channel>
+
+</beans>
